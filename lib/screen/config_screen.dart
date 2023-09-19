@@ -13,6 +13,7 @@ class configScreen extends StatefulWidget {
 
 class _configScreenState extends State<configScreen> {
 
+
   //basicamente a mesma coisa do "NewUser"
   TextEditingController nameController = TextEditingController();
   String? name;
@@ -21,10 +22,35 @@ class _configScreenState extends State<configScreen> {
 //intanciando as funções
   var userRepository = UserRepository();
 
+  void navigator () {
+    Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const homeScreen()));
+  }
+
+  getLabelName () async{
+    var data = await userRepository.getUserData();
+    return nameController.text = data[0]; //default text
+  }
+
+  @override
+  void initState() {
+    getLabelName();
+    super.initState();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Configurações")),
+      appBar: AppBar(
+          leading: GestureDetector(
+            child: const Icon(Icons.arrow_back),
+            onTap: () {
+              navigator();
+            },
+          ),
+          title: const Text("Configurações")),
 
       body:  Padding(
         padding: const EdgeInsets.all(32.0),
@@ -41,10 +67,10 @@ class _configScreenState extends State<configScreen> {
               controller: nameController,
               onChanged: (nameController) {
                 name = nameController;
-                setState(() { });
               },
               decoration: const InputDecoration(
                 filled: true,
+
               ),
             ),
 
@@ -52,7 +78,6 @@ class _configScreenState extends State<configScreen> {
 
             const Text("Qual a sua altura ?",  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
 
-            const Divider(),
 
             const SizedBox(height: 18),
 
@@ -71,19 +96,18 @@ class _configScreenState extends State<configScreen> {
 
             const SizedBox(height: 18),
 
-
-
-            Container(
+            SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: FilledButton(
                     onPressed: () async {
-                      //passando os parametros dos campos, e o context para troca de tela
-                      userRepository.setUser(User(name, height), context);
-                      setState(() {
-                      });
-                      Navigator.pop(context);
 
-
+                      if(name != null && name!.length <= 20) {
+                        //passando os parametros dos campos, e o context para troca de tela
+                        userRepository.setUser(User(name, height), context);
+                      } else {
+                        print("Nome Vazio");
+                        return;
+                      }
 
                     },
                     child: const Text("Salvar")))

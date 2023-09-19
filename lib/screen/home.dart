@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:imc_calculator/components/card.dart';
 import 'package:imc_calculator/components/floating_action_button.dart';
+import 'package:imc_calculator/controller/home_controller.dart';
+import 'package:imc_calculator/database/db_helper.dart';
 import 'package:imc_calculator/repository/User_repository.dart';
 import 'package:imc_calculator/screen/config_screen.dart';
-
 
 class homeScreen extends StatefulWidget {
   const homeScreen({super.key});
@@ -13,6 +14,14 @@ class homeScreen extends StatefulWidget {
 }
 
 class _homeScreenState extends State<homeScreen> {
+
+  //criando um controller para a home recarregar os cards
+  final controller = HomeController();
+
+  //criando a lista que vai receber os dados do sqlite
+  List <Map<String, dynamic>> get cardsList => controller.cardsList;
+
+  bool get _isLoading => controller.isLoading;
 
   //botão canto inferior direito
   var homeFloatButton = const homeFloatAction();
@@ -27,11 +36,12 @@ class _homeScreenState extends State<homeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getUserData();
+    _getUserData();
+    _getCards();
+
   }
 
-  getUserData () async {
-    print("getUser");
+  _getUserData () async {
     //instanciando a função que da o getData no hive
     var userData = await UserRepository().getUserData();
     //extraindo os dados do retorno da função
@@ -39,10 +49,17 @@ class _homeScreenState extends State<homeScreen> {
     //melhor limpeza, preferi assim
     name = userData[0];
     height = userData[1];
+
     //usando o setState pois caso não, ao carregar a tela, vai ser tentado preencher
     //o nome no topo, mas como ainda está nula, vai ficar como "null"
     setState(() { });
   }
+
+   _getCards () async {
+     await controller.getCards();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,43 +84,32 @@ class _homeScreenState extends State<homeScreen> {
                         "IMC Calculator",
                         style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
                       ),
-                      Text( "$name / Altura: $height m " , style: TextStyle(fontSize: 14.0, color: Colors.blue),
+                      Text( "$name / Altura: $height m " , style: const TextStyle(fontSize: 14.0, color: Colors.blue),
                       )
                     ],
                   ),
                   IconButton(
                         icon: const Icon(Icons.person),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => const configScreen()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const configScreen()));
                         },
                       ),
-
+                  IconButton(
+                        icon: const Icon(Icons.loop_outlined),
+                        onPressed: () {
+                          _getCards();
+                        },
+                      ),
                 ],
               ),
             ),
           ),
-
-
         ),
       ),
 
       floatingActionButton: const homeFloatAction(),
 
-      body: ListView(
-          children: [
 
-            const SizedBox(height: 40),
-
-            cardHomeComponent,
-
-            /*FilledButton(onPressed: () {
-
-
-            }, child: Text("botão"))*/
-
-          ],
-
-      ),
     );
   }
 }

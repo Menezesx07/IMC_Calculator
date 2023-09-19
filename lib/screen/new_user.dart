@@ -82,7 +82,6 @@ class _newUserScreenState extends State<newUserScreen> {
                       onPressed: () async {
                         //passando os parametros dos campos, e o context para troca de tela
                         await userRepository.setUser(User(name, height), context);
-                        userRepository.navigationRepository("push", context);
                       },
                       child: const Text("Salvar")))
             ],

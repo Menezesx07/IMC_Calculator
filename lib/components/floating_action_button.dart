@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:imc_calculator/controller/home_controller.dart';
+import 'package:imc_calculator/database/db_helper.dart';
 import 'package:imc_calculator/model/input_form.dart';
 import 'package:imc_calculator/repository/input_form_repository.dart';
+import 'package:imc_calculator/screen/home.dart';
 
 class homeFloatAction extends StatefulWidget {
   const homeFloatAction({super.key});
@@ -11,28 +14,26 @@ class homeFloatAction extends StatefulWidget {
 
 class _homeFloatActionState extends State<homeFloatAction> {
 
+  final controller = HomeController();
+
   double weight = 50;
-  bool makeExercise = false;
+  int? makeExercise = 0;
   String? mood;
   DateTime? dateController;
   //recebe o parametro dentro onTap
   var dateFormated;
+  bool makeExerciseController = false;
 
-  //intanciando as funções
-  var inputFormRepository = InputFormRepository();
 
-  //instanciando o bd (temporariamente)
-  var _inputForm = <InputForm> [];
+
 
   //carregando os cards do banco na função getCards
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCards();
+    //getCards();
   }
-
-  getCards() async => _inputForm = await inputFormRepository.listCards();
 
   //função que vai da tanto o setState da variavel
   //quando o state do StatefulBuilder do ShowModal
@@ -42,6 +43,15 @@ class _homeFloatActionState extends State<homeFloatAction> {
     setState(() {});
     state(() {});
   }
+
+  //tem de ser feito essa adaptação pois o SQLite
+  //não recebe Bool, apenas INT no lugar
+  void setMakeExercise () {
+    if (makeExerciseController == true) {
+      makeExercise = 1;
+    } else makeExercise = 0;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +123,7 @@ class _homeFloatActionState extends State<homeFloatAction> {
                             max: 200,
                             value: weight.toDouble(),
                             onChanged: (double value) {
-                              weight = value;
+                              weight = value.truncateToDouble();
                               //chamando o StatefulBuilder para recarregar
                               //o componente e exibir o valor correto
                               setStateBuilder(state);
@@ -127,9 +137,10 @@ class _homeFloatActionState extends State<homeFloatAction> {
                           title: const Text("Fez Exercicio hoje ?",
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           trailing: Switch(
-                            value: makeExercise,
+                            value: makeExerciseController,
                             onChanged: (bool value) {
-                              makeExercise = value;
+                              makeExerciseController = value;
+                              setMakeExercise();
                               setStateBuilder(state);
                             },
                           ),
@@ -197,15 +208,16 @@ class _homeFloatActionState extends State<homeFloatAction> {
                             width: MediaQuery.of(context).size.width,
                             child: FilledButton(
                                 onPressed: ()  async {
-                                  await inputFormRepository.addCard(InputForm(dateFormated, weight, makeExercise, mood));
+                                  SQLHelper.createItem(InputForm(
+                                      dateFormated,
+                                      weight,
+                                      makeExercise,
+                                      mood));
+
+                                  controller.getCards();
+
                                   Navigator.pop(context);
-                                  setStateBuilder(state);
 
-                                  getCards();
-
-                                  print("inicio");
-                                  print(_inputForm.length);
-                                  print("inicio");
 
                                 }, child: const Text("Salvar")))
                       ],
