@@ -86,6 +86,7 @@ class _cardHomeState extends State<cardHome> {
                      weight: _weight,
                      color: cardColor,
                      imc: imc,
+                     id: _id,
                    ))
             );
           },

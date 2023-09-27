@@ -30,9 +30,11 @@ class _configScreenState extends State<configScreen> {
         MaterialPageRoute(builder: (context) => const homeScreen()));
   }
 
+  //preenchendo tanto a label quanto a variavel interna com o nome ja escolhido
   getLabelName () async{
     var data = await userRepository.getUserData();
-    return nameController.text = data[0]; //default text
+    nameController.text = data[0]; //default text
+    name = data[0]; //default text
   }
 
   @override
@@ -74,7 +76,6 @@ class _configScreenState extends State<configScreen> {
               },
               decoration: const InputDecoration(
                 filled: true,
-
               ),
             ),
 

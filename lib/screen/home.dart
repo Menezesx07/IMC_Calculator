@@ -86,9 +86,7 @@ class _homeScreenState extends State<homeScreen> {
                 itemCount: value.cardsList.length,
                 itemBuilder: (context, index) {
 
-                  //return Text("teste");
-                 // return Text("${value.cardsList[index]}");
-                  return cardHome(cardList: value.cardsList[index], height: value.height,);
+                  return cardHome(cardList: value.cardsList[index], height: value.height);
 
                 }
             )

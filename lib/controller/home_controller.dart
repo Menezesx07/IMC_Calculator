@@ -28,12 +28,12 @@ class HomeController extends ChangeNotifier {
   //essa função dentro do controller é só para usar o notifyListener
   setCard(InputForm inputForm) async {
       SQLHelper.createItem(inputForm);
-      getCards();
+      await getCards();
   }
 
-  deleteCard(int id) {
-    SQLHelper.deleteItem(id);
-    getCards();
+  deleteCard(int id, context) async{
+    await SQLHelper.deleteItem(id);
+    await getCards();
   }
 
   Future<void> getUserData() async {

@@ -70,15 +70,6 @@ class SQLHelper extends ChangeNotifier {
     return db.query("cards", orderBy: "id");
   }
 
-  //função de retornar o item escolhido pelo id
-  static Future<List<Map<String, dynamic>>> getItem(int id) async {
-    //abrindo a conexão com o banco
-    final db = await SQLHelper.db();
-    //retornando o conteudo na tabela com base no id
-    //lembrando que o ? no sql, é onde vai a variavel
-    return db.query("cards", where: "id = ?", whereArgs: [id], limit: 1);
-  }
-
   //função de deletar o item
   static Future<void> deleteItem(int id) async {
     //abrindo a conexão com o banco
@@ -88,6 +79,15 @@ class SQLHelper extends ChangeNotifier {
     } catch (e) {
       print("Erro ao deletar : $e");
     }
+  }
+
+  //função de retornar o item escolhido pelo id
+  static Future<List<Map<String, dynamic>>> getItem(int id) async {
+    //abrindo a conexão com o banco
+    final db = await SQLHelper.db();
+    //retornando o conteudo na tabela com base no id
+    //lembrando que o ? no sql, é onde vai a variavel
+    return db.query("cards", where: "id = ?", whereArgs: [id], limit: 1);
   }
 
 

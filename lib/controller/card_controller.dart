@@ -44,27 +44,27 @@ class CardController extends ChangeNotifier {
   Color? getImcColor (imc) {
     double _imc = double.parse(imc);
 
-    if(_imc <= 16.9) {
+    if(_imc <= 16.99) {
       color = Colors.redAccent;
       imcType = "Magreza Grave";
-    } else if (_imc >= 17 && _imc <= 18.5) {
+    } else if (_imc >= 17 && _imc <= 18.59) {
       color = Colors.yellowAccent[300];
       imcType = "Magreza Leve";
-    } else if (_imc >= 18.6 && _imc <= 24.9) {
+    } else if (_imc >= 18.6 && _imc <= 24.99) {
       color = Colors.greenAccent;
       imcType = "Saudável";
-    } else if (_imc >= 25 && _imc <= 29.9) {
+    } else if (_imc >= 25 && _imc <= 29.99) {
       color = Colors.yellow[300];
       imcType = "Sobrepeso";
-    } else if (_imc >= 30 && _imc <= 34.9) {
-      color = Colors.orangeAccent[300];
-      imcType = "Obesidade Grau 1";
-    } else if (_imc >= 35 && _imc <= 39.9) {
-      color = Colors.deepOrangeAccent[300];
-      imcType = "Obesidade Grau 2";
+    } else if (_imc >= 30 && _imc <= 34.99) {
+      color = Colors.orangeAccent;
+      imcType = "Obesidade Gr. 1";
+    } else if (_imc >= 35 && _imc <= 39.99) {
+      color = Colors.deepOrangeAccent;
+      imcType = "Obesidade Gr. 2";
     } else if (_imc >= 40) {
       color = Colors.red;
-      imcType = "Obesidade Grau 3";
+      imcType = "Obesidade Gr. 3";
     }
     return color;
   }
