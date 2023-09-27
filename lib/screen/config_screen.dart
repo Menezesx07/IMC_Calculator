@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:imc_calculator/controller/home_controller.dart';
+import 'package:provider/provider.dart';
 
 import '../model/user.dart';
 import '../repository/User_repository.dart';
@@ -39,10 +41,12 @@ class _configScreenState extends State<configScreen> {
     super.initState();
   }
 
+  bool isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Consumer(builder: (context, value, child) =>  Scaffold(
       appBar: AppBar(
           leading: GestureDetector(
             child: const Icon(Icons.arrow_back),
@@ -101,9 +105,14 @@ class _configScreenState extends State<configScreen> {
                 child: FilledButton(
                     onPressed: () async {
 
+                      final func = context.read<HomeController>();
+
                       if(name != null && name!.length <= 20) {
-                        //passando os parametros dos campos, e o context para troca de tela
-                        userRepository.setUser(User(name, height), context);
+
+                      func.setUser(User(name, height), context);
+
+
+
                       } else {
                         print("Nome Vazio");
                         return;
@@ -112,10 +121,10 @@ class _configScreenState extends State<configScreen> {
                     },
                     child: const Text("Salvar")))
 
-
           ],
         ),
-      ),
+       ),
+      )
     );
   }
 }

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imc_calculator/controller/home_controller.dart';
 import 'package:imc_calculator/database/db_helper.dart';
 import 'package:imc_calculator/model/input_form.dart';
-import 'package:imc_calculator/repository/input_form_repository.dart';
-import 'package:imc_calculator/screen/home.dart';
+import 'package:provider/provider.dart';
 
 class homeFloatAction extends StatefulWidget {
   const homeFloatAction({super.key});
@@ -14,9 +13,33 @@ class homeFloatAction extends StatefulWidget {
 
 class _homeFloatActionState extends State<homeFloatAction> {
 
+  //esqueci de componentizar o dialog :c
+  Future<void> _dialogBuilder(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Aviso"),
+          content: const Text(
+            "Defina a data e depois como está se sentindo para salvar",
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+          ),
+          actions: <Widget>[
+            FilledButton(
+              child: const Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final controller = HomeController();
 
-  double weight = 50;
+  String weight = "50.00";
   int? makeExercise = 0;
   String? mood;
   DateTime? dateController;
@@ -25,18 +48,15 @@ class _homeFloatActionState extends State<homeFloatAction> {
   bool makeExerciseController = false;
 
 
-
-
   //carregando os cards do banco na função getCards
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    //getCards();
   }
 
   //função que vai da tanto o setState da variavel
-  //quando o state do StatefulBuilder do ShowModal
+  //quando o state do StatefulBuilder do ShowModal.
   //ShowModal trabalha como um "Stateless" e precisa
   //builder para "virar" Stateful
   void setStateBuilder(state) {
@@ -55,12 +75,12 @@ class _homeFloatActionState extends State<homeFloatAction> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
+    return Consumer<HomeController>(builder: (context, value, child) =>  FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
           showModalBottomSheet(
-              //isScroll para caso haja uma lista (muitos cards)
-              //a modal não fique no fim da pagina
+            //isScroll para caso haja uma lista (muitos cards)
+            //a modal não fique no fim da pagina
               isScrollControlled: true,
               context: context,
               builder: (context) {
@@ -83,23 +103,23 @@ class _homeFloatActionState extends State<homeFloatAction> {
 
                           //calendario ----------
                           trailing: FilledButton(
-                              onPressed: () async {
-                               //chamando o calendario
+                            onPressed: () async {
+                              //chamando o calendario
                               dateController = await showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(1900, 5, 20),
-                                    lastDate: DateTime(2023, 12, 12));
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2023, 1, 1),
+                                  lastDate: DateTime.now());
 
                               //formatando a data, recebendo dia, mes e ano
                               dateFormated = "${dateController?.day}/${dateController?.month}/${dateController?.year}";
 
                               setStateBuilder(state);
 
-                              },
-                              child: dateController == null
-                                  ? const Text("Escolher")
-                                  : Text("$dateFormated"),),
+                            },
+                            child: dateController == null
+                                ? const Text("Escolher")
+                                : Text("$dateFormated"),),
                         ),
 
                         const Divider(),
@@ -112,7 +132,7 @@ class _homeFloatActionState extends State<homeFloatAction> {
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           trailing: Text(
-                            "${weight.toStringAsFixed(2)} kg",
+                            "${weight} kg",
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -121,9 +141,9 @@ class _homeFloatActionState extends State<homeFloatAction> {
                         Slider(
                             min: 30,
                             max: 200,
-                            value: weight.toDouble(),
+                            value: double.parse(weight),
                             onChanged: (double value) {
-                              weight = value.truncateToDouble();
+                              weight = value.toStringAsFixed(2);
                               //chamando o StatefulBuilder para recarregar
                               //o componente e exibir o valor correto
                               setStateBuilder(state);
@@ -204,20 +224,26 @@ class _homeFloatActionState extends State<homeFloatAction> {
                         ),
                         const Divider(),
 
-                        Container(
+                        SizedBox(
                             width: MediaQuery.of(context).size.width,
                             child: FilledButton(
                                 onPressed: ()  async {
-                                  SQLHelper.createItem(InputForm(
-                                      dateFormated,
-                                      weight,
-                                      makeExercise,
-                                      mood));
 
-                                  controller.getCards();
+                                  final counter = context.read<HomeController>();
 
-                                  Navigator.pop(context);
+                                  if( mood != null && dateFormated != null ) {
 
+                                    counter.setCard(InputForm(
+                                        dateFormated,
+                                        double.parse(weight),
+                                        makeExercise,
+                                        mood));
+
+                                    Navigator.pop(context);
+
+                                  }  else {
+                                    _dialogBuilder(context);
+                                  }
 
                                 }, child: const Text("Salvar")))
                       ],
@@ -225,6 +251,7 @@ class _homeFloatActionState extends State<homeFloatAction> {
                   );
                 });
               });
-        });
+        })
+    );
   }
 }

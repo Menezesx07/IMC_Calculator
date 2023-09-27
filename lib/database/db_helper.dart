@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:imc_calculator/model/input_form.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
-class SQLHelper {
+class SQLHelper extends ChangeNotifier {
 
   //instanciando a função "Database" do package do sqlflite e criando a
   //tabela com base nela (modo de criar simplificado do sqlflite)
@@ -37,6 +38,7 @@ class SQLHelper {
     );
   }
 
+
   //função de Insert no banco
   static Future<int> createItem(InputForm inputForm) async {
     //abrindo a conexão com base na função acima
@@ -55,6 +57,7 @@ class SQLHelper {
       data,
       //vai ignorar os arquivos existentes e enviar os novos
       conflictAlgorithm: sql.ConflictAlgorithm.replace);
+
     //retornando o retorno do insert
     return id;
   }
@@ -75,33 +78,6 @@ class SQLHelper {
     //lembrando que o ? no sql, é onde vai a variavel
     return db.query("cards", where: "id = ?", whereArgs: [id], limit: 1);
   }
-
-/*  //função de atualizar o item em especifico com o id
-  static Future<int> updateItem (InputForm inputForm) async {
-    //abrindo a conexão com base na função acima
-    final db = await SQLHelper.db();
-    //montando o item
-    final data = {
-      "id": inputForm.id,
-      "date": inputForm.date,
-      "weight": inputForm.weight,
-      "makeExercise": inputForm.makeExercise,
-      "mood": inputForm.mood
-    };
-
-    final result =
-    //retornando o conteudo na tabela com base no id
-    //lembrando que o ? no sql, é onde vai a variavel
-        await db.update(
-            "cards",
-            data,
-            where: "id = ?",
-            whereArgs: [inputForm.id]);
-
-    //retorno do retorno do sqlite
-    return result;
-
-  }*/
 
   //função de deletar o item
   static Future<void> deleteItem(int id) async {
